@@ -62,7 +62,7 @@ const higienizarAvatar = (avatarDoBanco) => {
       if (email) {
         if (!userEmail) setUserEmail(email);
         try {
-          const res = await axios.get(`http://localhost:3000/carregar-avatar/${email}?t=${Date.now()}`);
+          const res = await axios.get(`/carregar-avatar/${email}?t=${Date.now()}`);
           if (res.data) {
             setSaldo(res.data.pontos || 0);
             setInventario(res.data.inventario || []);
@@ -104,7 +104,7 @@ const higienizarAvatar = (avatarDoBanco) => {
       // 2. Salva no banco
       if (userEmail) {
         try {
-          await axios.post("http://localhost:3000/ganhar-pontos", {
+          await axios.post("/ganhar-pontos", {
             email: userEmail,
             pontos: pontos,
             desafioId: desafioId // <--- ENVIA O ID

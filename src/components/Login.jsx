@@ -16,7 +16,7 @@ const Login = ({ onLogin }) => {
     if (!email) return alert("Digite seu e-mail.");
     setLoading(true);
     try {
-      await axios.post("http://localhost:3000/login", { email });
+      await axios.post("/login", { email });
       localStorage.setItem("aluno_email", email);
       onLogin(email);
     } catch (error) {
@@ -34,7 +34,7 @@ const Login = ({ onLogin }) => {
 
     setLoading(true);
     try {
-      await axios.post("http://localhost:3000/auth/solicitar-codigo", { email });
+      await axios.post("/auth/solicitar-codigo", { email });
       setEtapaCadastro(2); 
       alert("Código enviado! (Verifique o terminal do servidor)");
     } catch (error) {
@@ -47,7 +47,7 @@ const Login = ({ onLogin }) => {
     setLoading(true);
     try {
       // Envia tudo para o servidor criar a conta
-      await axios.post("http://localhost:3000/auth/validar-cadastro", { 
+      await axios.post("/auth/validar-cadastro", { 
         email, codigo, nome, serie 
       });
       

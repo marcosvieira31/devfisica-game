@@ -110,7 +110,7 @@ const [config, setConfig] = useState({
 
   const handleSalvar = async () => {
     try {
-      await axios.post("http://localhost:3000/salvar-avatar", { 
+      await axios.post("/salvar-avatar", { 
         email: localStorage.getItem("aluno_email"), 
         avatarConfig: config 
       });

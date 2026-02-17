@@ -33,7 +33,7 @@ const Loja = ({ saldoAtual, aoComprar, inventario }) => {
       const email = localStorage.getItem("aluno_email");
       
       // 2. Envia pedido ao servidor
-      const res = await axios.post("http://localhost:3000/comprar-item", {
+      const res = await axios.post("/comprar-item", {
         email,
         itemId: item.id,
         preco: item.preco

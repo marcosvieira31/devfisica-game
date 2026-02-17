@@ -14,7 +14,7 @@ const Ranking = ({ serieUsuario }) => {
     const buscarRanking = async () => {
       setCarregando(true);
       try {
-        const res = await axios.get(`http://localhost:3000/ranking/${serieAtual}`);
+        const res = await axios.get(`/ranking/${serieAtual}`);
         setLista(res.data);
       } catch (error) {
         console.error("Erro ao buscar ranking");
