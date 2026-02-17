@@ -24,10 +24,11 @@ const AlunoSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   nome: String,
   serie: String,
-  pontos: { type: Number, default: 0 },
   inventario: [String],
   desafiosConcluidos: { type: [Number], default: [] }, // <--- NOVO CAMPO: Lista de IDs
-  avatarConfig: Object
+  avatarConfig: Object,
+  pontos: { type: Number, default: 0 }, // Moeda para gastar
+  pontosRanking: { type: Number, default: 0 }, // XP para o Ranking
 });
 
 const Aluno = mongoose.model("Aluno", AlunoSchema);
@@ -164,7 +165,7 @@ app.post('/ganhar-pontos', async (req, res) => {
     const aluno = await Aluno.findOneAndUpdate(
       { email: email },
       { 
-        $inc: { pontos: pontos }, // Soma os pontos
+        $inc: { pontos: pontos, pontosRanking: pontos }, // Soma os pontos
         $addToSet: { desafiosConcluidos: desafioId } // Adiciona o ID na lista (se já não estiver lá)
       },
       { new: true } // Retorna o aluno já atualizado para conferência
@@ -176,11 +177,31 @@ app.post('/ganhar-pontos', async (req, res) => {
     } else {
       res.status(404).json({ message: "Aluno não encontrado" });
     }
-
+    res.send("Pontos adicionados!");
   } catch (error) {
     console.error("Erro ao dar pontos:", error);
     res.status(500).json({ error: "Erro interno" });
   }
+});
+
+app.get("/ranking/:serie", async (req, res) => {
+  try {
+    const topAlunos = await Aluno.find({ serie: req.params.serie })
+      .sort({ pontosRanking: -1 }) // Ordena do maior para o menor
+      .limit(10) // Pega só os top 10 (opcional)
+      .select("nome avatarConfig pontosRanking"); // Só devolve o necessário
+    
+    res.json(topAlunos);
+  } catch (error) { res.status(500).send("Erro"); }
+});
+
+// 4. Nova Rota: Resetar Ranking (Para você usar como Admin)
+// Dica: Proteja essa rota ou use um segredo no futuro
+app.post("/admin/resetar-ranking", async (req, res) => {
+  try {
+    await Aluno.updateMany({}, { pontosRanking: 0 });
+    res.send("Ranking resetado com sucesso!");
+  } catch (error) { res.status(500).send("Erro"); }
 });
 
 // 8. COMPRAR ITEM
