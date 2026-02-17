@@ -36,7 +36,7 @@ const Login = ({ onLogin }) => {
     try {
       await axios.post("/auth/solicitar-codigo", { email });
       setEtapaCadastro(2); 
-      alert("Código enviado! (Verifique o terminal do servidor)");
+      alert("Código enviado! Verifique a caixa de entrada do seu e-mail institucional ou spam/lixeira!)");
     } catch (error) {
       alert(error.response?.data?.message || "Erro ao solicitar código.");
     }
