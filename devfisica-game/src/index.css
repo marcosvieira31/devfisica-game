@@ -1,0 +1,89 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #242424; /* Fundo escuro */
+  color: rgba(255, 255, 255, 0.87);
+}
+
+/* --- SOLUÇÃO PARA O SELETOR DE COR --- */
+input[type="color"] {
+  -webkit-appearance: none; /* Remove estilo padrão do navegador */
+  border: none;
+  width: 100%;
+  height: 45px;             /* Altura confortável */
+  cursor: pointer;
+  padding: 0;
+  background-color: transparent;
+  border-radius: 8px;       /* Bordas arredondadas */
+  overflow: hidden;
+}
+
+/* Remove a borda interna estranha no Chrome/Edge */
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 8px;
+  padding: 0;
+}
+
+/* --- ESTILO DOS BOTÕES --- */
+button {
+  font-family: inherit;
+  transition: transform 0.1s, opacity 0.2s;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+svg[style*="bottom: -2.5%"] {
+ /* Empurra a roupa para a base do círculo */
+
+  left: 0.5%;  /* Aumenta de 26% para 32% para cobrir o pescoço */
+}
+
+svg[style*="bottom: -2%"] {
+ /* Empurra a roupa para a base do círculo */
+
+  left: 0.5%;  /* Aumenta de 26% para 32% para cobrir o pescoço */
+}
+
+svg[style*="bottom: -2.2%"] {
+ /* Empurra a roupa para a base do círculo */
+
+  left: -0.5%;  /* Aumenta de 26% para 32% para cobrir o pescoço */
+}
+
+svg[style*="bottom: 40.2%"] {
+ /* Empurra a roupa para a base do círculo */
+
+  left: 0%;  /* Aumenta de 26% para 32% para cobrir o pescoço */
+}
+
+
+/* Opcional: Garante que nada vaze para fora do círculo */
+.avatar-container {
+  overflow: hidden;
+  border-radius: 50%;
+}
