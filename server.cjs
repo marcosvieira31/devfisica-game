@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 // --- CONEXÃO COM O BANCO ---
-const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://admin:<missaok13>@devfisicagame.qypfne3.mongodb.net/?appName=DevfisicaGame";
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://admin:missaok13@devfisicagame.qypfne3.mongodb.net/?appName=DevfisicaGame";
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ CONECTADO AO MONGODB!"))
