@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors'); 
 const nodemailer = require("nodemailer"); 
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -242,7 +243,7 @@ app.get("/admin/resetar/:email", async (req, res) => {
 app.use(express.static(path.join(__dirname, "dist"))); // Se usar Vite é "dist", se usar CRA é "build"
 
 // Qualquer outra rota que não seja API, manda pro React resolver
-app.get("*", (req, res) => {
+app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
