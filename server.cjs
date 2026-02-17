@@ -49,12 +49,6 @@ const transporter = nodemailer.createTransport({
 // ==========================================
 //                 ROTAS
 // ==========================================
-
-// 1. ROTA DE TESTE
-app.get('/', (req, res) => {
-  res.send('Servidor do Física Game está ON! 🚀');
-});
-
 // 2. SOLICITAR CÓDIGO
 app.post("/auth/solicitar-codigo", async (req, res) => {
   const { email } = req.body;
