@@ -19,17 +19,17 @@ mongoose.connect(MONGO_URL)
   .catch((erro) => console.error("❌ ERRO NO BANCO:", erro));
 
 // ==========================================
-//  DEFINIÇÃO DO MODELO (MOVIDO PARA O TOPO)
+//  DEFINIÇÃO DO MODELO
 // ==========================================
 const AlunoSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   nome: String,
   serie: String,
   inventario: [String],
-  desafiosConcluidos: { type: [Number], default: [] }, // <--- NOVO CAMPO: Lista de IDs
+  desafiosConcluidos: { type: [Number], default: [] },
   avatarConfig: Object,
-  pontos: { type: Number, default: 0 }, // Moeda para gastar
-  pontosRanking: { type: Number, default: 0 }, // XP para o Ranking
+  pontos: { type: Number, default: 0 },
+  pontosRanking: { type: Number, default: 0 },
 });
 
 const Aluno = mongoose.model("Aluno", AlunoSchema);
@@ -37,39 +37,63 @@ const Aluno = mongoose.model("Aluno", AlunoSchema);
 // --- CÓDIGOS TEMPORÁRIOS ---
 const codigosTemporarios = {};
 
-// --- CONFIGURAÇÃO DE E-MAIL ---
+// --- CONFIGURAÇÃO DE E-MAIL (GMAIL) ---
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'seu_email_real@gmail.com', 
-    pass: 'sua_senha_de_app'          
+    user: process.env.EMAIL_USER, // Pega do Heroku/Arquivo .env
+    pass: process.env.EMAIL_PASS  // Pega do Heroku/Arquivo .env
   }
 });
 
 // ==========================================
-//                 ROTAS
+//                ROTAS
 // ==========================================
-// 2. SOLICITAR CÓDIGO
+
+// 2. SOLICITAR CÓDIGO (COM ENVIO DE E-MAIL REAL)
 app.post("/auth/solicitar-codigo", async (req, res) => {
   const { email } = req.body;
 
+  // Validação do domínio (opcional, remova se quiser liberar geral)
   if (!email || !email.endsWith("@enova.educacao.ba.gov.br")) {
     return res.status(400).json({ message: "É necessário usar um e-mail institucional (@enova.educacao.ba.gov.br)" });
   }
 
   try {
+    // Verifica se já existe (Se for só para CADASTRO, mantém isso. 
+    // Se quiser usar para LOGIN também, remova este bloco if)
     const alunoExistente = await Aluno.findOne({ email });
     if (alunoExistente) {
       return res.status(400).json({ message: "Este e-mail já possui cadastro. Faça login." });
     }
 
+    // Gera o código
     const codigo = Math.floor(100000 + Math.random() * 900000).toString();
     codigosTemporarios[email] = codigo;
 
-    console.log(`\n🔑 CÓDIGO PARA ${email}: ${codigo}\n`);
-    res.json({ message: "Código enviado!" });
+    // --- LÓGICA DE ENVIO DE E-MAIL ---
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Seu Código de Verificação - Ciência GO',
+      text: `Olá! Seu código de cadastro é: ${codigo}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Erro ao enviar e-mail:", error);
+        // Opcional: Se der erro no email, remove o código gerado para não travar
+        delete codigosTemporarios[email]; 
+        return res.status(500).json({ message: "Erro ao enviar e-mail. Verifique se o endereço está correto." });
+      } else {
+        console.log('E-mail enviado: ' + info.response);
+        res.json({ message: "Código enviado para o seu e-mail!" });
+      }
+    });
+    // ----------------------------------
 
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Erro interno." });
   }
 });
@@ -124,7 +148,7 @@ app.get("/carregar-avatar/:email", async (req, res) => {
         avatar: aluno.avatarConfig,
         pontos: aluno.pontos,
         inventario: aluno.inventario,
-        desafiosConcluidos: aluno.desafiosConcluidos || [] // <--- ENVIA A LISTA
+        desafiosConcluidos: aluno.desafiosConcluidos || []
       });
     } else {
       res.status(404).send("Aluno não encontrado");
@@ -153,45 +177,41 @@ app.post("/salvar-avatar", async (req, res) => {
 app.post('/ganhar-pontos', async (req, res) => {
   const { email, pontos, desafioId } = req.body;
 
-  // Debug para você ver no terminal se o ID está chegando
   console.log(`>>> Salvando: Email=${email} | Pontos=${pontos} | ID=${desafioId}`);
 
   try {
     const aluno = await Aluno.findOneAndUpdate(
       { email: email },
       { 
-        $inc: { pontos: pontos, pontosRanking: pontos }, // Soma os pontos
-        $addToSet: { desafiosConcluidos: desafioId } // Adiciona o ID na lista (se já não estiver lá)
+        $inc: { pontos: pontos, pontosRanking: pontos },
+        $addToSet: { desafiosConcluidos: desafioId }
       },
-      { new: true } // Retorna o aluno já atualizado para conferência
+      { new: true }
     );
 
     if (aluno) {
-      console.log("✅ Sucesso! Lista de concluídos:", aluno.desafiosConcluidos);
       res.json({ novoSaldo: aluno.pontos, message: "Pontos computados!" });
     } else {
       res.status(404).json({ message: "Aluno não encontrado" });
     }
-    res.send("Pontos adicionados!");
   } catch (error) {
     console.error("Erro ao dar pontos:", error);
     res.status(500).json({ error: "Erro interno" });
   }
 });
 
+// ROTAS DE RANKING
 app.get("/ranking/:serie", async (req, res) => {
   try {
     const topAlunos = await Aluno.find({ serie: req.params.serie })
-      .sort({ pontosRanking: -1 }) // Ordena do maior para o menor
-      .limit(10) // Pega só os top 10 (opcional)
-      .select("nome avatarConfig pontosRanking"); // Só devolve o necessário
+      .sort({ pontosRanking: -1 })
+      .limit(10)
+      .select("nome avatarConfig pontosRanking");
     
     res.json(topAlunos);
   } catch (error) { res.status(500).send("Erro"); }
 });
 
-// 4. Nova Rota: Resetar Ranking (Para você usar como Admin)
-// Dica: Proteja essa rota ou use um segredo no futuro
 app.post("/admin/resetar-ranking", async (req, res) => {
   try {
     await Aluno.updateMany({}, { pontosRanking: 0 });
@@ -226,26 +246,29 @@ app.post('/comprar-item', async (req, res) => {
   }
 });
 
-// 9. ADMIN RESET
+// 9. ADMIN DELETE
 app.get("/admin/resetar/:email", async (req, res) => {
   const { email } = req.params;
   await Aluno.deleteOne({ email });
   res.send(`Usuário ${email} apagado.`);
 });
 
-// Serve os arquivos estáticos da pasta de build do React
-app.use(express.static(path.join(__dirname, "dist"))); // Se usar Vite é "dist", se usar CRA é "build"
+// ==========================================
+//  SERVIR O FRONTEND (REACT)
+// ==========================================
 
-// Qualquer outra rota que não seja API, manda pro React resolver
+// Serve arquivos estáticos da pasta dist
+app.use(express.static(path.join(__dirname, "dist")));
+
+// Regex para capturar qualquer rota e mandar para o React
 app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
-// Importante: Use a porta que o Azure mandar ou a 3000
+// ==========================================
+//  INICIALIZAÇÃO ÚNICA (CORRIGIDA)
+// ==========================================
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Rodando na porta ${PORT}`));
-
-// --- INICIAR ---
-app.listen(3000, () => {
-  console.log("🚀 Servidor rodando na porta 3000");
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });
