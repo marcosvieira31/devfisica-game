@@ -12,9 +12,9 @@ app.use(cors());
 app.use(express.json());
 
 // --- CONEXÃO COM O BANCO ---
-const MONGO_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/fisica-game";
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://admin:<missaok13>@devfisicagame.qypfne3.mongodb.net/?appName=DevfisicaGame";
 
-mongoose.connect(MONGO_URL)
+mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ CONECTADO AO MONGODB!"))
   .catch((erro) => console.error("❌ ERRO NO BANCO:", erro));
 
