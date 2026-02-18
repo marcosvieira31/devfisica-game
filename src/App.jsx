@@ -134,7 +134,7 @@ const higienizarAvatar = (avatarDoBanco) => {
           <div style={{ width: "100%", maxWidth: LARGURA_APP, margin: "0 auto", display: "flex", flexDirection: "column" }}>
             
             {/* CABEÇALHO */}
-            <header style={{ background: "#2c3e50", padding: "10px 15px", borderRadius: "10px", marginBottom: "20px", display: "flex", alignItems: "center", boxShadow: "0 4px 6px rgba(0,0,0,0.2)" }}>
+            <header style={{ background: "#2c3e50", padding: "10px 15px", position: "relative", borderRadius: "10px", marginBottom: "20px", display: "flex", alignItems: "center", boxShadow: "0 4px 6px rgba(0,0,0,0.2)" }}>
               
               {/* Perfil Clicável */}
               <div 
@@ -157,7 +157,7 @@ const higienizarAvatar = (avatarDoBanco) => {
                   <span style={{ fontSize: "0.7rem", color: "#3498db", marginTop: "2px", fontWeight: "bold" }}>Editar Perfil ✎</span>
                 </div>
               </div>
-              <img src="/favicon.png" alt="" width={"75px"} style={{marginLeft: "47.5px"}}/>
+              <img src="/favicon.png" alt="" width={"75px"} style={{position: "absolute", left: "50%", transform: "translateX(-50%)"}}/>
               {/* Saldo */}
               <div style={{ textAlign: "right", background: "rgba(0,0,0,0.2)", padding: "5px 10px", borderRadius: "6px", marginLeft: "auto" }}>
                 <p style={{ margin: 0, fontSize: "0.6rem", color: "#f1c40f", fontWeight: "bold" }}>ENERGIA</p>
