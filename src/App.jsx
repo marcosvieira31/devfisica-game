@@ -157,7 +157,7 @@ const higienizarAvatar = (avatarDoBanco) => {
                   <span style={{ fontSize: "0.7rem", color: "#3498db", marginTop: "2px", fontWeight: "bold" }}>Editar Perfil ✎</span>
                 </div>
               </div>
-              <img src="/favicon.png" alt="" width={"75px"} style={{position: "absolute", left: "50%", transform: "translateX(-50%)"}}/>
+              <img src="/favicon.png" alt="" className="logo-header" width={"75px"} style={{position: "absolute", left: "50%", transform: "translateX(-50%)"}}/>
               {/* Saldo */}
               <div style={{ textAlign: "right", background: "rgba(0,0,0,0.2)", padding: "5px 10px", borderRadius: "6px", marginLeft: "auto" }}>
                 <p style={{ margin: 0, fontSize: "0.6rem", color: "#f1c40f", fontWeight: "bold" }}>ENERGIA</p>

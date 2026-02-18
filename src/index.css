@@ -87,3 +87,10 @@ svg[style*="bottom: 40.2%"] {
   overflow: hidden;
   border-radius: 50%;
 }
+
+@media (max-width: 450px) {
+  .logo-header {
+    left: 55% !important;
+    width: 50px; /* Fica bem compacta para caber tudo */
+  }
+}
