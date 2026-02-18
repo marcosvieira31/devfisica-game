@@ -90,7 +90,7 @@ svg[style*="bottom: 40.2%"] {
 
 @media (max-width: 450px) {
   .logo-header {
-    left: 55% !important;
+    left: 60% !important;
     width: 50px; /* Fica bem compacta para caber tudo */
   }
 }
