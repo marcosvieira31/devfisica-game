@@ -3,12 +3,12 @@ import axios from "axios";
 import Avatar from "react-nice-avatar";
 
 const Ranking = ({ serieUsuario }) => {
-  const [serieAtual, setSerieAtual] = useState(serieUsuario || "6ano");
+  const [serieAtual, setSerieAtual] = useState(serieUsuario || "9ano");
   const [lista, setLista] = useState([]);
   const [carregando, setCarregando] = useState(false);
 
   // Lista das séries que existem na sua escola
-  const seriesDisponiveis = ["9ano","2serie", "3serie"];
+  const seriesDisponiveis = [{val: "9ano", label:"9º ano"},{val: "2serie", label:"2ª série"}, {val: "3serie", label:"3ª série"}];
 
   useEffect(() => {
     const buscarRanking = async () => {
@@ -32,24 +32,32 @@ const Ranking = ({ serieUsuario }) => {
 
       {/* Seletor de Série */}
       <div style={{ display: "flex", overflowX: "auto", gap: "10px", padding: "10px 0", marginBottom: "20px" }}>
-        {seriesDisponiveis.map(s => (
-          <button
-            key={s}
-            onClick={() => setSerieAtual(s)}
-            style={{
-              padding: "8px 15px",
-              borderRadius: "20px",
-              border: "none",
-              background: serieAtual === s ? "#f1c40f" : "#ecf0f1",
-              color: serieAtual === s ? "#fff" : "#7f8c8d",
-              fontWeight: "bold",
-              cursor: "pointer",
-              whiteSpace: "nowrap"
-            }}
-          >
-            {s.toUpperCase()}
-          </button>
-        ))}
+        {seriesDisponiveis.map(s => {
+          // Criamos uma variável para facilitar a leitura:
+          // Verifica se o valor salvo no estado é IGUAL ao valor deste botão
+          const estaSelecionado = serieAtual === s.val;
+
+          return (
+            <button
+              key={s.val}
+              onClick={() => setSerieAtual(s.val)}
+              style={{
+                padding: "8px 15px",
+                borderRadius: "20px",
+                border: "none",
+                // AQUI ESTAVA O ERRO: Agora comparamos s.val com serieAtual
+                background: estaSelecionado ? "#f1c40f" : "#ecf0f1",
+                color: estaSelecionado ? "#fff" : "#7f8c8d",
+                fontWeight: "bold",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                transition: "all 0.3s ease" // Dica: Adicione isso para suavizar a troca de cor
+              }}
+            >
+              {s.label.toUpperCase()}
+            </button>
+          );
+        })}
       </div>
 
       {/* Lista de Alunos */}

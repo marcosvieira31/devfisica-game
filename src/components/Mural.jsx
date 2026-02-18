@@ -111,6 +111,6 @@ const Mural = () => {
   );
 };
 
-const botaoSeta = { background: "transparent", border: "1px solid #ddd", borderRadius: "5px", cursor: "pointer", fontSize: "1.2rem", padding: "0 10px" };
+const botaoSeta = {background: "transparent", border: "1px solid #ddd", borderRadius: "5px", cursor: "pointer", fontSize: "1.2rem", padding: "0 10px", color: "#000" };
 
 export default Mural;

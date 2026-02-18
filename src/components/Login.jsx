@@ -64,6 +64,8 @@ const Login = ({ onLogin }) => {
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", background: "#2c3e50" }}>
       <div style={{ background: "white", padding: "40px", borderRadius: "10px", width: "100%", maxWidth: "400px", textAlign: "center", boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}>
         
+         <img src="/favicon.png" alt="" width={"250px" }/>
+
         <h2 style={{ color: "#2c3e50", marginBottom: "20px" }}>
           {modo === "login" ? "Acesso do Aluno" : "Novo Cadastro"}
         </h2>

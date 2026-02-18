@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 const Desafios = ({ aoGanharPontos, userSerie, desafiosConcluidos }) => {
   const [perguntaAtual, setPerguntaAtual] = useState(0);
   const [feedback, setFeedback] = useState(null);
+  const [jaErrou, setJaErrou] = useState(false);
 
   const bancoDeDesafios = [
     { id: 1, serie: "9ano", pergunta: "Estado com forma/volume definidos:", opcoes: ["Sólido", "Líquido", "Gasoso"], correta: "Sólido", pontos: 50 },
@@ -12,8 +13,8 @@ const Desafios = ({ aoGanharPontos, userSerie, desafiosConcluidos }) => {
     { id: 4, serie: "1serie", pergunta: "Lei da Inércia é a:", opcoes: ["1ª Lei", "2ª Lei", "3ª Lei"], correta: "1ª Lei", pontos: 100 },
     { id: 5, serie: "2serie", pergunta: "Escala absoluta:", opcoes: ["Celsius", "Kelvin", "Fahrenheit"], correta: "Kelvin", pontos: 80 },
     { id: 6, serie: "2serie", pergunta: "Espelho plano forma imagem:", opcoes: ["Real", "Virtual"], correta: "Virtual", pontos: 100 },
-    { id: 7, serie: "3serie", pergunta: "Carga negativa:", opcoes: ["Próton", "Elétron"], correta: "Elétron", pontos: 50 },
-    { id: 8, serie: "3serie", pergunta: "Lei de Ohm:", opcoes: ["U=R.i", "F=m.a"], correta: "U=R.i", pontos: 100 }
+    { id: 9, serie: "3serie", pergunta: "Carga negativa:", opcoes: ["Próton", "Elétron"], correta: "Elétron", pontos: 50 },
+    { id: 10, serie: "3serie", pergunta: "Lei de Ohm:", opcoes: ["U=R.i", "F=m.a"], correta: "U=R.i", pontos: 100 }
   ];
 
   // FILTRAGEM DUPLA: 
@@ -27,15 +28,27 @@ const Desafios = ({ aoGanharPontos, userSerie, desafiosConcluidos }) => {
     const desafio = desafiosDisponiveis[perguntaAtual];
     
     if (resposta === desafio.correta) {
-      setFeedback(`Acertou! 🎉 +${desafio.pontos} J`);
+      // --- LÓGICA DE PONTOS ---
+      // Se jáErrou for true, ganha 0. Se for false (primeira vez), ganha os pontos cheios.
+      const pontosParaDar = jaErrou ? 0 : desafio.pontos; 
+
+      if (pontosParaDar > 0) {
+        setFeedback(`Acertou! 🎉 +${pontosParaDar} J`);
+      } else {
+        setFeedback("Correto! (Mas sem pontos desta vez 😉)");
+      }
       
-      // Passa os pontos E o ID do desafio
-      aoGanharPontos(desafio.pontos, desafio.id); 
+      // Envia para o backend (mesmo sendo 0, é importante para marcar como CONCLUÍDO)
+      aoGanharPontos(pontosParaDar, desafio.id);
+
+      // Reseta o estado de erro para a PRÓXIMA pergunta
+      setJaErrou(false); 
 
     } else {
-      setFeedback("Errou! Tente novamente.");
+      // --- LÓGICA DO ERRO ---
+      setFeedback("Ops! Errou. Tente novamente (agora valendo 0 pontos).");
+      setJaErrou(true); // Marca que o usuário "sujou" essa tentativa
     }
-
     setTimeout(() => {
       setFeedback(null);
       // Como a lista vai diminuir (o desafio atual sai da lista), 
@@ -76,11 +89,11 @@ const Desafios = ({ aoGanharPontos, userSerie, desafiosConcluidos }) => {
         <>
           <h4 style={{ margin: "0 0 15px 0" }}>{desafioAtual.pergunta}</h4>
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {desafioAtual.opcoes.map(op => (
+            {desafioAtual.opcoes.map(op => (  
               <button 
                 key={op} 
                 onClick={() => responder(op)} 
-                style={{ padding: "12px", border: "1px solid #ddd", borderRadius: "5px", background: "#f9f9f9", cursor: "pointer", textAlign: "left", transition: "0.2s" }}
+                style={{ padding: "12px", border: "1px solid #ddd", borderRadius: "5px", background: "#f9f9f9", color: "#000", cursor: "pointer", textAlign: "left", transition: "0.2s" }}
                 onMouseOver={(e) => e.target.style.background = "#eee"}
                 onMouseOut={(e) => e.target.style.background = "#f9f9f9"}
               >

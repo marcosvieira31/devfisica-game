@@ -19,7 +19,7 @@ const AVATAR_PADRAO_EDITOR = {
   eyeStyle: "circle",
   noseStyle: "round",
   mouthStyle: "smile",
-  shirtStyle: "polo",
+  shirtStyle: "short",
   glassesStyle: "none",
   hairStyle: "normal",
   hatStyle: "none",

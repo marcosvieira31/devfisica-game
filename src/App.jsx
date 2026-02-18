@@ -87,7 +87,7 @@ const higienizarAvatar = (avatarDoBanco) => {
       setAvatarConfig(AVATAR_PADRAO); 
       setSaldo(0);
       setTelaAtual("mural");
-      setMostrarRanking(!mostrarRanking);
+      setMostrarRanking(false);
     };
 
     const handleCompraRealizada = (dados) => { 
@@ -120,9 +120,6 @@ const higienizarAvatar = (avatarDoBanco) => {
       transition: "all 0.2s", display: "flex", flexDirection: "column", alignItems: "center", gap: "5px"
     });
 
-    // Use a função auxiliar na renderização
-    const currentAvatarConfig = getSafeAvatarConfig(avatarConfig);
-
     const avatarVisualizacao = {
     ...AVATAR_PADRAO,
     ...avatarConfig,
@@ -137,7 +134,7 @@ const higienizarAvatar = (avatarDoBanco) => {
           <div style={{ width: "100%", maxWidth: LARGURA_APP, margin: "0 auto", display: "flex", flexDirection: "column" }}>
             
             {/* CABEÇALHO */}
-            <header style={{ background: "#2c3e50", padding: "10px 15px", borderRadius: "10px", marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: "center", boxShadow: "0 4px 6px rgba(0,0,0,0.2)" }}>
+            <header style={{ background: "#2c3e50", padding: "10px 15px", borderRadius: "10px", marginBottom: "20px", display: "flex", alignItems: "center", boxShadow: "0 4px 6px rgba(0,0,0,0.2)" }}>
               
               {/* Perfil Clicável */}
               <div 
@@ -160,9 +157,9 @@ const higienizarAvatar = (avatarDoBanco) => {
                   <span style={{ fontSize: "0.7rem", color: "#3498db", marginTop: "2px", fontWeight: "bold" }}>Editar Perfil ✎</span>
                 </div>
               </div>
-
+              <img src="/favicon.png" alt="" width={"75px"} style={{marginLeft: "47.5px"}}/>
               {/* Saldo */}
-              <div style={{ textAlign: "right", background: "rgba(0,0,0,0.2)", padding: "5px 10px", borderRadius: "6px" }}>
+              <div style={{ textAlign: "right", background: "rgba(0,0,0,0.2)", padding: "5px 10px", borderRadius: "6px", marginLeft: "auto" }}>
                 <p style={{ margin: 0, fontSize: "0.6rem", color: "#f1c40f", fontWeight: "bold" }}>ENERGIA</p>
                 <strong style={{ fontSize: "1.2rem", color: "#f1c40f" }}>{saldo} J</strong>
               </div>
@@ -229,7 +226,7 @@ const higienizarAvatar = (avatarDoBanco) => {
             </div>
             
             <div style={{ textAlign: "center", marginTop: "20px", color: "#7f8c8d", fontSize: "0.8rem" }}>
-              Ciência GO &copy; 2026
+              Devfisica &copy; 2026
             </div>
           </div>
         )}
