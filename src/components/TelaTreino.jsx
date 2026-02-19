@@ -15,7 +15,7 @@ export default function TelaTreino({ usuarioEmail }) {
   // --- BUSCAR QUESTÕES NO BACKEND ---
   const iniciarTreino = async () => {
     try {
-      const res = await axios.post('http://localhost:3000/treino/buscar', {
+      const res = await axios.post('/treino/buscar', {
         area,
         dificuldade,
         email: usuarioEmail // <--- ADICIONE ESTA LINHA
@@ -46,7 +46,7 @@ export default function TelaTreino({ usuarioEmail }) {
     const ehPrimeiraTentativa = !jaErrou;
 
     try {
-      const res = await axios.post('http://localhost:3000/treino/responder', {
+      const res = await axios.post('/treino/responder', {
         email: usuarioEmail,
         questaoId: questaoAtual._id,
         respostaDoAluno: alternativaId,

@@ -17,7 +17,7 @@ export default function TelaLinks({ aoVoltar }) {
   useEffect(() => {
     async function carregar() {
       try {
-        const res = await axios.get('http://localhost:3000/links');
+        const res = await axios.get('/links');
         setLinks(res.data);
       } catch (error) {
         alert("Erro ao carregar links.");

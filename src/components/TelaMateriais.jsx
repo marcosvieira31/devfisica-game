@@ -23,7 +23,7 @@ export default function TelaMateriais({ aoVoltar }) {
   useEffect(() => {
     async function carregar() {
       try {
-        const res = await axios.get('http://localhost:3000/materiais');
+        const res = await axios.get('/materiais');
         setMateriais(res.data);
       } catch (error) {
         alert("Erro ao carregar materiais.");
