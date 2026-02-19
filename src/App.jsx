@@ -10,6 +10,7 @@
   import Loja from "./components/Loja";
   import Login from "./components/Login";
   import Ranking from "./components/Ranking";
+  import TelaEstudos from './components/TelaEstudos';
 
   const AVATAR_PADRAO = { sex: "man", faceColor: "#F9C9B6", eyebrowStyle: "up", earSize: "small", eyeStyle: "circle", noseStyle: "round", mouthStyle: "smile", shirtStyle: "polo", glassesStyle: "none", hairStyle: "normal", hatStyle: "none", hairColor: "#000", shirtColor: "#3498db", bgColor: "#e2e2e2", shape: "rounded" };
 
@@ -167,9 +168,9 @@ const higienizarAvatar = (avatarDoBanco) => {
             
             {/* NAVEGAÇÃO 4 ABAS */}
             <nav style={{ display: "flex", gap: "5px", marginBottom: "15px" }}>
-              <button onClick={() => setTelaAtual("mural")} style={estiloBotaoNav("mural")}><span>📅</span> Mural</button>
-              <button onClick={() => setTelaAtual("noticias")} style={estiloBotaoNav("noticias")}><span>📢</span> Notícias</button>
-              <button onClick={() => setTelaAtual("desafios")} style={estiloBotaoNav("desafios")}><span>⚔️</span> Desafios</button>
+              <button onClick={() => setTelaAtual("mural")} style={estiloBotaoNav("mural")}><span>📅</span>Mural</button>
+              <button onClick={() => setTelaAtual("noticias")} style={estiloBotaoNav("noticias")}><span>📢</span>Notícias</button>
+              <button onClick={() => setTelaAtual("desafios")} style={estiloBotaoNav("desafios")}><span>📚</span>Estudos</button>
               <button onClick={() => setTelaAtual("loja")} style={estiloBotaoNav("loja")}><span>🛒</span> Loja</button>
             </nav>
 
@@ -198,29 +199,13 @@ const higienizarAvatar = (avatarDoBanco) => {
               
               {telaAtual === "mural" && <Mural />}
               {telaAtual === "noticias" && <Noticias />}
-              {telaAtual === "desafios" && (
-                <>
-                  {/* Cabeçalho da área de desafios com botão de Ranking */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                    <h3 style={{ margin: 0 }}>Desafios</h3>
-                    <button 
-                      onClick={() => setMostrarRanking(!mostrarRanking)}
-                      style={{ background: "#f1c40f", border: "none", padding: "8px 15px", borderRadius: "5px", color: "white", fontWeight: "bold", cursor: "pointer" }}
-                    >
-                      {mostrarRanking ? "🔙 Voltar aos Desafios" : "🏆 Ver Ranking"}
-                    </button>
-                  </div>
-
-                  {mostrarRanking ? (
-                    <Ranking serieUsuario={userSerie} />
-                  ) : (
-                    <Desafios 
-                      aoGanharPontos={handleGanharPontos} 
-                      userSerie={userSerie}
-                      desafiosConcluidos={desafiosConcluidos}
-                    />
-                  )}
-                </>
+              {telaAtual === "desafios" && ( // Ou "estudos", dependendo de como você nomeou
+                <TelaEstudos 
+                  usuarioEmail={userEmail}
+                  userSerie={userSerie} // <--- IMPORTANTE: Passar a série para o ranking funcionar
+                  desafiosConcluidos={desafiosConcluidos} // <--- Passar lista de feitos
+                  aoGanharPontos={handleGanharPontos} // <--- Passar função de ganhar pontos
+                />
               )}
               {telaAtual === "loja" && <Loja saldoAtual={saldo} aoComprar={handleCompraRealizada} inventario={inventario}/>}
             </div>

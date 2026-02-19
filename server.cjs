@@ -3,6 +3,12 @@ const mongoose = require('mongoose');
 const cors = require('cors'); 
 const nodemailer = require("nodemailer"); 
 const path = require('path');
+
+const Questao = require('./models/Questao.cjs');
+const Aluno = require('./models/Aluno.cjs');
+const Material = require('./models/Material.cjs');
+const LinkUtil = require('./models/LinkUtil.cjs');
+
 require('dotenv').config();
 
 const app = express();
@@ -17,22 +23,6 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://admin:missaok13@devfis
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ CONECTADO AO MONGODB!"))
   .catch((erro) => console.error("❌ ERRO NO BANCO:", erro));
-
-// ==========================================
-//  DEFINIÇÃO DO MODELO
-// ==========================================
-const AlunoSchema = new mongoose.Schema({
-  email: { type: String, unique: true },
-  nome: String,
-  serie: String,
-  inventario: [String],
-  desafiosConcluidos: { type: [Number], default: [] },
-  avatarConfig: Object,
-  pontos: { type: Number, default: 0 },
-  pontosRanking: { type: Number, default: 0 },
-});
-
-const Aluno = mongoose.model("Aluno", AlunoSchema);
 
 // --- CÓDIGOS TEMPORÁRIOS ---
 const codigosTemporarios = {};
@@ -243,6 +233,161 @@ app.post('/comprar-item', async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ error: "Erro na compra" });
+  }
+});
+
+// Rota para buscar questões de treino filtradas
+// --- ROTA 1: BUSCAR QUESTÕES (FILTRANDO AS JÁ FEITAS) ---
+app.post('/treino/buscar', async (req, res) => {
+  const { area, dificuldade, email } = req.body; 
+
+  try {
+     const usuario = await Aluno.findOne({ email });
+    
+    // Converte os IDs salvos (String) para ObjectId do Mongo
+    // O filtro $nin precisa comparar ObjectId com ObjectId
+    let idsJaFeitos = [];
+    if (usuario && usuario.questoesRealizadas && usuario.questoesRealizadas.length > 0) {
+      idsJaFeitos = usuario.questoesRealizadas.map(id => new mongoose.Types.ObjectId(id));
+    }
+
+    const questoes = await Questao.aggregate([
+      { 
+        $match: { 
+          area: area, 
+          dificuldade: dificuldade,
+          _id: { $nin: idsJaFeitos } // <--- O PULO DO GATO
+        } 
+      },
+      { $sample: { size: 5 } } 
+    ]);
+    res.json(questoes);
+
+  } catch (error) {
+    console.error("❌ Erro na busca:", error);
+    res.status(500).json({ erro: "Erro no servidor" });
+  }
+});
+
+app.post('/treino/responder', async (req, res) => {
+  // Recebemos o 'primeiraTentativa' do frontend
+  const { email, questaoId, respostaDoAluno, primeiraTentativa } = req.body;
+
+  try {
+    const questao = await Questao.findById(questaoId);
+    const usuario = await Aluno.findOne({ email });
+
+    if (!questao || !usuario) {
+      return res.status(404).json({ erro: "Dados não encontrados" });
+    }
+
+    const acertou = questao.respostaCorreta === respostaDoAluno;
+
+ if (acertou) {
+      // --- CORREÇÃO DE SEGURANÇA ---
+      // Se o usuário for antigo e não tiver a lista ainda, criamos ela agora:
+      if (!usuario.questoesRealizadas) {
+        usuario.questoesRealizadas = [];
+      }
+
+      // 1. VERIFICA SE JÁ FEZ ANTES
+      if (usuario.questoesRealizadas.includes(questaoId)) {
+        return res.json({ 
+          resultado: "acertou", 
+          xpGanho: 0,
+          mensagem: "Você já completou essa questão antes! (0 XP)" 
+        });
+      }
+
+      // 2. CALCULA O XP DA RODADA
+      // Se for primeira tentativa: XP cheio. Se não: 0.
+      const pontosParaDar = primeiraTentativa ? questao.xp : 0;
+
+      // 3. ATUALIZA O USUÁRIO
+      usuario.pontos += pontosParaDar;
+      usuario.pontosRanking += pontosParaDar; // Opcional: se quiser separar ranking de saldo
+      
+      // IMPORTANTE: Marcamos como realizada MESMO SE FOR 0 PONTOS.
+      // Isso impede que ele dê F5 na página para tentar "de primeira" de novo.
+      usuario.questoesRealizadas.push(questaoId);
+      
+      await usuario.save();
+
+      // 4. MENSAGEM PERSONALIZADA
+      const msg = pontosParaDar > 0 
+        ? `Boa! +${pontosParaDar} XP` 
+        : `Correto! Mas como não foi de primeira, +0 XP.`;
+
+      res.json({ 
+        resultado: "acertou", 
+        xpGanho: pontosParaDar,
+        mensagem: msg
+      });
+
+    } else {
+      // Se errou
+      res.json({ 
+        resultado: "errou", 
+        // Não mandamos a resposta certa ainda, deixamos ele tentar de novo
+        mensagem: "Errou!" 
+      });
+    }
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erro ao processar");
+  }
+});
+
+// ==========================================
+//  ROTAS DE MATERIAIS DE AULA
+// ==========================================
+
+// 1. LISTAR MATERIAIS
+app.get('/materiais', async (req, res) => {
+  try {
+    // Busca todos, ordenados do mais novo para o mais antigo (-1)
+    const materiais = await Material.find().sort({ dataPostagem: -1 });
+    res.json(materiais);
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao buscar materiais" });
+  }
+});
+
+// 2. ADICIONAR MATERIAL (ADMIN)
+// (Usaremos isso via Postman ou Script por enquanto)
+app.post('/materiais', async (req, res) => {
+  try {
+    const novoMaterial = new Material(req.body);
+    await novoMaterial.save();
+    res.json({ message: "Material postado com sucesso!", material: novoMaterial });
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao salvar material" });
+  }
+});
+
+// ==========================================
+//  ROTAS DE LINKS ÚTEIS
+// ==========================================
+
+app.get('/links', async (req, res) => {
+  try {
+    // Busca e ordena por categoria
+    const links = await LinkUtil.find().sort({ categoria: 1, titulo: 1 });
+    res.json(links);
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao buscar links" });
+  }
+});
+
+// (Opcional - para cadastro futuro via postman/admin)
+app.post('/links', async (req, res) => {
+  try {
+    const novoLink = new LinkUtil(req.body);
+    await novoLink.save();
+    res.json(novoLink);
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao salvar link" });
   }
 });
 

@@ -51,7 +51,7 @@ const Loja = ({ saldoAtual, aoComprar, inventario }) => {
   return (
     <div style={{ animation: "fadeIn 0.3s" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-        <h3 style={{ margin: 0, color: "#2c3e50" }}>Loja de Itens</h3>
+        <h3 style={{ marginBottom: "15px", color: "#2c3e50" }}>🛒 Loja de Itens</h3>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>

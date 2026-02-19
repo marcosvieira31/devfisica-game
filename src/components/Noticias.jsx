@@ -24,7 +24,7 @@ const Noticias = () => {
     <div style={{ animation: "fadeIn 0.3s" }}>
       {!noticiaSelecionada ? (
         <>
-          <h3 style={{ color: "#2c3e50", marginBottom: "15px" }}>Mural de Avisos</h3>
+          <h3 style={{ color: "#2c3e50", marginBottom: "15px" }}>📢 Notícias</h3>
           {noticias.map(n => (
             <div 
               key={n.id} onClick={() => setNoticiaSelecionada(n)}
