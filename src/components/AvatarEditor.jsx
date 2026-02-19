@@ -7,7 +7,7 @@ const REQUISITOS_LOJA = {
   glassesStyle: { "round": "oculos_redondo", "square": "oculos_quadrado" },
   hatStyle: { "turban": "chapeu_turbante", "beanie": "chapeu_gorro" },
   shirtStyle: { "polo": "camisa_polo", "hoody": "camisa_moletom" },
-  mouthStyle: { "laugh": "exp_rindo", "peace": "exp_biquinho" },
+  mouthStyle: { "laugh": "riso_largo", "peace": "riso" },
 };
 
 // Definição local para garantir que o editor nunca comece "pelado"
@@ -152,7 +152,7 @@ const [config, setConfig] = useState({
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
         <SeletorInteligente label="Gênero" atributo="sex" opcoes={[{val:"man", label:"Masculino"}, {val:"woman", label:"Feminino"}]} />
-        <SeletorInteligente label="Expressão" atributo="mouthStyle" opcoes={[{val:"smile", label:"Sorrindo"}, {val:"peace", label:"Riso Largo"}, {val:"laugh", label:"Rindo"}]} />
+        <SeletorInteligente label="Expressão" atributo="mouthStyle" opcoes={[{val:"smile", label:"Sorrindo"}, {val:"peace", label:"Riso"}, {val:"laugh", label:"Riso Largo"}]} />
         <SeletorInteligente label="Roupa" atributo="shirtStyle" opcoes={[{val:"polo", label:"Polo"}, {val:"hoody", label:"Moletom"}, {val:"short", label:"Gola V"}]} />
         <SeletorInteligente label="Cabelo" atributo="hairStyle" opcoes={[{val:"normal", label:"Normal"}, {val:"thick", label:"Espesso"}, {val:"mohawk", label:"Moicano"}, {val:"womanShort", label:"Curto"}, {val:"womanLong", label:"Comprido"}]} />
         <SeletorInteligente label="Chapéu" atributo="hatStyle" opcoes={[{val:"none", label:"Nenhum"}, {val:"beanie", label:"Gorro"}, {val:"turban", label:"Turbante"}]} />

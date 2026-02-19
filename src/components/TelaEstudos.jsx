@@ -7,7 +7,7 @@ import TelaLinks from './TelaLinks';
 import Desafios from './Desafios'; // Ajuste o caminho se necessário
 import Ranking from './Ranking';   // Ajuste o caminho se necessário
 
-export default function TelaEstudos({ usuarioEmail, userSerie, desafiosConcluidos, aoGanharPontos }) {
+export default function TelaEstudos({ usuarioEmail, userSerie, desafiosConcluidos, aoGanharPontos, temDesafioNovo }) {
   const [modoAtual, setModoAtual] = useState('MENU'); // MENU, TREINO, RANKING, DESAFIOS, MATERIAIS
 
   // --- MENU PRINCIPAL (DASHBOARD) ---
@@ -34,13 +34,35 @@ export default function TelaEstudos({ usuarioEmail, userSerie, desafiosConcluido
           />
 
           {/* BOTÃO 2: DESAFIOS OFICIAIS */}
-          <CardMenu 
-            titulo="Desafios" 
-            icone="⚔️"
-            desc="Missões que valem muito para o Ranking e Loja!"
-            cor="#f1c40f"
-            onClick={() => setModoAtual('DESAFIOS')}
-          />
+          <div style={{ position: 'relative', display: 'block', width: '100%' }}>
+            
+            {/* A ETIQUETA FIRME E FIXA */}
+            {temDesafioNovo && (
+              <span style={{
+                position: 'absolute', 
+                top: '-2px', 
+                right: '0',
+                background: '#e74c3c', 
+                color: 'white', 
+                fontSize: '12px',
+                padding: '4px 10px', 
+                borderRadius: '12px', 
+                fontWeight: 'bold',
+                boxShadow: '0 3px 6px rgba(0,0,0,0.3)',
+                zIndex: 999 
+              }}>
+                NOVO
+              </span>
+            )}
+
+            <CardMenu 
+              titulo="Desafios" 
+              icone="⚔️"
+              desc="Missões que valem muito para o Ranking e Loja!"
+              cor="#f1c40f"
+              onClick={() => setModoAtual('DESAFIOS')}
+            />
+          </div>
 
           {/* BOTÃO 3: RANKING GERAL */}
           <CardMenu 

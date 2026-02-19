@@ -93,4 +93,8 @@ svg[style*="bottom: 40.2%"] {
     left: 60% !important;
     width: 50px; /* Fica bem compacta para caber tudo */
   }
+
+  .noticiaTexto {
+    font-size: 0.85rem !important; 
+  }
 }

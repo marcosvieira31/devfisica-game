@@ -6,13 +6,12 @@
   import AvatarEditor from "./components/AvatarEditor";
   import Mural from "./components/Mural";       
   import Noticias from "./components/Noticias"; 
-  import Desafios from "./components/Desafios"; 
   import Loja from "./components/Loja";
   import Login from "./components/Login";
-  import Ranking from "./components/Ranking";
   import TelaEstudos from './components/TelaEstudos';
+  import TelaAdmin from "./components/TelaAdmin";
 
-  const AVATAR_PADRAO = { sex: "man", faceColor: "#F9C9B6", eyebrowStyle: "up", earSize: "small", eyeStyle: "circle", noseStyle: "round", mouthStyle: "smile", shirtStyle: "polo", glassesStyle: "none", hairStyle: "normal", hatStyle: "none", hairColor: "#000", shirtColor: "#3498db", bgColor: "#e2e2e2", shape: "rounded" };
+  const AVATAR_PADRAO = { sex: "man", faceColor: "#F9C9B6", eyebrowStyle: "up", earSize: "small", eyeStyle: "circle", noseStyle: "round", mouthStyle: "smile", shirtStyle: "short", glassesStyle: "none", hairStyle: "normal", hatStyle: "none", hairColor: "#000", shirtColor: "#3498db", bgColor: "#e2e2e2", shape: "rounded" };
 
   // Função auxiliar para limpar o objeto de configuração
   const getSafeAvatarConfig = (userConfig) => {
@@ -53,7 +52,9 @@ const higienizarAvatar = (avatarDoBanco) => {
     const [avatarConfig, setAvatarConfig] = useState(AVATAR_PADRAO);
         // --- CARREGAR DADOS ---
     const [desafiosConcluidos, setDesafiosConcluidos] = useState([]);
+    const [desafiosComErro, setDesafiosComErro] = useState([]);
     const [mostrarRanking, setMostrarRanking] = useState(false);
+    const [temDesafioNovo, setTemDesafioNovo] = useState(false);
     
     const [telaAtual, setTelaAtual] = useState("mural"); 
     const LARGURA_APP = "500px"; 
@@ -68,6 +69,7 @@ const higienizarAvatar = (avatarDoBanco) => {
             setSaldo(res.data.pontos || 0);
             setInventario(res.data.inventario || []);
             setDesafiosConcluidos(res.data.desafiosConcluidos || []); // <--- CARREGA A LISTA
+            setDesafiosComErro(res.data.desafiosComErro || []);
             setUserName(res.data.nome || email.split('@')[0]);
             setUserSerie(res.data.serie || "");
             if (res.data.avatar) {
@@ -78,6 +80,27 @@ const higienizarAvatar = (avatarDoBanco) => {
         } catch (e) { if (e.response && e.response.status === 404) handleLogout(); }
       }
     };
+
+    // Verifica se há desafios novos/pendentes para este aluno
+  // Verifica se há desafios pendentes (Versão Estável)
+  useEffect(() => {
+    // Só faz a busca se o aluno já estiver com a série carregada no sistema
+    if (userSerie) { 
+      axios.get('/desafios').then(res => {
+        const desafiosBanco = res.data;
+        
+        const desafiosBloqueados = [...desafiosConcluidos, ...desafiosComErro].map(String);
+        
+        const pendente = desafiosBanco.some(d => 
+          d.serie === userSerie && !desafiosBloqueados.includes(String(d._id || d.id))
+        );
+        
+        setTemDesafioNovo(pendente);
+      }).catch(err => console.error("Erro ao buscar pendentes:", err));
+    }
+  }, [userSerie, desafiosConcluidos, desafiosComErro]); 
+  // ^^^ Agora ele só recalcula se o aluno acertar/errar algo, ou mudar de conta.
+
     useEffect(() => { carregarDados(); }, [userEmail]);
 
     const handleLogin = (email) => setUserEmail(email);
@@ -97,22 +120,37 @@ const higienizarAvatar = (avatarDoBanco) => {
     };
 
     // --- CORREÇÃO AQUI: SALVA NO BANCO DE DADOS ---
-    const handleGanharPontos = async (pontos, desafioId) => {
-      // 1. Atualiza visualmente na hora
-      setSaldo(s => s + pontos);
-      setDesafiosConcluidos(prev => [...prev, desafioId]); // <--- MARCA COMO FEITO LOCALMENTE
+const handleGanharPontos = async (pontos, desafioId) => {
+      // 1. Garante que é um número (evita que 50 + 100 vire "50100")
+      const pontosReais = Number(pontos); 
 
-      // 2. Salva no banco
+      // 2. Atualiza visualmente na hora
+      setSaldo(s => s + pontosReais);
+      setDesafiosConcluidos(prev => [...prev, desafioId]); 
+
+      // 3. Salva no banco
       if (userEmail) {
         try {
           await axios.post("/ganhar-pontos", {
             email: userEmail,
-            pontos: pontos,
-            desafioId: desafioId // <--- ENVIA O ID
+            pontos: pontosReais,
+            desafioId: desafioId 
           });
-        } catch (error) { console.error(error); }
+        } catch (error) { 
+          console.error("Erro ao comunicar com o servidor:", error); 
+        }
       }
     };
+
+    // Salva no cérebro do App que o aluno errou, para não esquecer ao trocar de tela
+  const handleErrarDesafio = (desafioId) => {
+    setDesafiosComErro(prev => {
+      if (!prev.includes(desafioId)) {
+        return [...prev, desafioId];
+      }
+      return prev;
+    });
+  };
 
     const estiloBotaoNav = (nomeTela) => ({
       flex: 1, padding: "10px 5px", border: "none", cursor: "pointer", fontSize: "0.9rem",
@@ -170,8 +208,39 @@ const higienizarAvatar = (avatarDoBanco) => {
             <nav style={{ display: "flex", gap: "5px", marginBottom: "15px" }}>
               <button onClick={() => setTelaAtual("mural")} style={estiloBotaoNav("mural")}><span>📅</span>Mural</button>
               <button onClick={() => setTelaAtual("noticias")} style={estiloBotaoNav("noticias")}><span>📢</span>Notícias</button>
-              <button onClick={() => setTelaAtual("desafios")} style={estiloBotaoNav("desafios")}><span>📚</span>Estudos</button>
+              <button 
+                      onClick={() => setTelaAtual("desafios")} 
+                      style={{ position: 'relative', ...estiloBotaoNav("desafios") }}
+                    >
+                      <span>⚔️</span> Desafios
+                      
+                      {/* A MAGIA ACONTECE AQUI: A Etiqueta vermelha */}
+                      {temDesafioNovo && (
+                        <span style={{
+                          position: 'absolute', 
+                          top: '-8px', 
+                          right: '-8px',
+                          background: '#e74c3c', 
+                          color: 'white', 
+                          fontSize: '10px',
+                          padding: '3px 6px', 
+                          borderRadius: '12px', 
+                          fontWeight: 'bold',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                          animation: 'pulse 1.5s infinite' // Faz o botão pulsar para chamar a atenção
+                        }}>
+                          NOVO
+                        </span>
+                      )}
+                    </button>
               <button onClick={() => setTelaAtual("loja")} style={estiloBotaoNav("loja")}><span>🛒</span> Loja</button>
+
+              {/* PORTA SECRETA DO ADMIN */}
+              {userEmail === 'marcos.silva456@enova.educacao.ba.gov.br' && (
+                <button onClick={() => setTelaAtual("admin")} style={{...estiloBotaoNav("admin"), background: "#c0392b", borderBottomColor: "#e74c3c"}}>
+                  <span>👨‍🏫</span> Painel
+                </button>
+              )}
             </nav>
 
             {/* CONTEÚDO */}
@@ -204,10 +273,14 @@ const higienizarAvatar = (avatarDoBanco) => {
                   usuarioEmail={userEmail}
                   userSerie={userSerie} // <--- IMPORTANTE: Passar a série para o ranking funcionar
                   desafiosConcluidos={desafiosConcluidos} // <--- Passar lista de feitos
+                  desafiosComErro={desafiosComErro}// <--- Passar lista de erros
                   aoGanharPontos={handleGanharPontos} // <--- Passar função de ganhar pontos
+                  aoErrarDesafio={handleErrarDesafio}
+                  temDesafioNovo={temDesafioNovo}
                 />
               )}
               {telaAtual === "loja" && <Loja saldoAtual={saldo} aoComprar={handleCompraRealizada} inventario={inventario}/>}
+              {telaAtual === "admin" && <TelaAdmin />}
             </div>
             
             <div style={{ textAlign: "center", marginTop: "20px", color: "#7f8c8d", fontSize: "0.8rem" }}>

@@ -20,6 +20,9 @@ const Loja = ({ saldoAtual, aoComprar, inventario }) => {
     
     // --- CABELOS ---
     { id: "cabelo_moicano", nome: "Cabelo Punk", tipo: "Cabelo", preco: 400, icone: "🤘" },
+    // --- EXPRESSÕES ---
+    { id: "riso_largo", nome: "Riso Largo", tipo: "Expressão", preco: 300, icone: "😁" },
+    { id: "riso", nome: "Riso", tipo: "Expressão", preco: 200, icone: "🙂" }
   ];
 
   const comprarItem = async (item) => {

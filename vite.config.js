@@ -18,6 +18,9 @@ export default defineConfig({
       '/treino': 'http://localhost:3000',
       '/materiais': 'http://localhost:3000',
       '/links': 'http://localhost:3000',
+      '/mural': 'http://localhost:3000',
+      '/noticias': 'http://localhost:3000',
+      '/desafios': 'http://localhost:3000',
     }
   }
 })

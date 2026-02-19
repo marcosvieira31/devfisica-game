@@ -17,7 +17,8 @@ const AlunoSchema = new mongoose.Schema({
   pontosRanking: { type: Number, default: 0 },
   
   // Histórico de Desafios (Antigo)
-  desafiosConcluidos: { type: [Number], default: [] },
+  desafiosConcluidos: { type: [String], default: [] },
+  desafiosComErro: [{ type: String }],
   
   // Histórico de Questões de Treino (Novo - Anti-Farm)
   questoesRealizadas: { type: [String], default: [] } 

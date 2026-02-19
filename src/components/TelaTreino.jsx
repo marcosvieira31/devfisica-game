@@ -130,7 +130,7 @@ export default function TelaTreino({ usuarioEmail }) {
     <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
         <span>Questão {indiceAtual + 1}/{questoes.length}</span>
-        <span style={{ fontWeight: 'bold', color: '#3498db' }}>{q.xp} XP</span>
+        <span style={{ fontWeight: 'bold', color: '#3498db' }}>{q.xp} Pontos</span>
       </div>
 
       <div style={{ background: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
