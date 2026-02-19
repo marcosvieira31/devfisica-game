@@ -29,7 +29,7 @@ export default function TelaLinks({ aoVoltar }) {
   }, []);
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto', animation: 'fadeIn 0.5s' }}>
+    <div style={{maxWidth: '1000px', margin: '0 auto', animation: 'fadeIn 0.5s' }}>
       
       {/* Cabeçalho */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>

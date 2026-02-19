@@ -95,7 +95,7 @@ export default function TelaEstudos({ usuarioEmail, userSerie, desafiosConcluido
 
   // --- ROTEAMENTO INTERNO ---
   return (
-    <div style={{ padding: '20px' }}>
+    <div >
       <BotaoVoltar />
 
       {modoAtual === 'TREINO' && (
@@ -117,7 +117,7 @@ export default function TelaEstudos({ usuarioEmail, userSerie, desafiosConcluido
       )}
 
       {modoAtual === 'RANKING' && (
-        <div style={{ background: 'white', padding: '20px', borderRadius: '10px' }}>
+        <div style={{ background: 'white', borderRadius: '10px' }}>
            {/* Reutilizando o componente de Ranking que você já tinha */}
            <Ranking serieUsuario={userSerie} />
         </div>

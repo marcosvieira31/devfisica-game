@@ -14,7 +14,10 @@ export default defineConfig({
       '/ganhar-pontos': 'http://localhost:3000',
       '/comprar-item': 'http://localhost:3000',
       '/ranking': 'http://localhost:3000',
-      '/admin': 'http://localhost:3000'
+      '/admin': 'http://localhost:3000',
+      '/treino': 'http://localhost:3000',
+      '/materiais': 'http://localhost:3000',
+      '/links': 'http://localhost:3000',
     }
   }
 })

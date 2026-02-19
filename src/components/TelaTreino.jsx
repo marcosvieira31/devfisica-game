@@ -90,7 +90,7 @@ export default function TelaTreino({ usuarioEmail }) {
   // --- TELA DE CONFIGURAÇÃO ---
   if (etapa === 'CONFIG') {
     return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
+      <div style={{textAlign: 'center' }}>
         <h3>Configurar Treino 🧠</h3>
         
         <div style={{ margin: '20px 0' }}>

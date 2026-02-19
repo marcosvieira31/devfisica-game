@@ -35,7 +35,7 @@ export default function TelaMateriais({ aoVoltar }) {
   }, []);
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
+    <div style={{maxWidth: '1000px', margin: '0 auto' }}>
       
       {/* Cabeçalho */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
