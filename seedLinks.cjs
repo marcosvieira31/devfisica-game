@@ -2,7 +2,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const LinkUtil = require('./models/LinkUtil.cjs');
 
-mongoose.connect(process.env.MONGO_URI || "SuaStringDeConexaoAqui")
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Conectado ao Mongo!'))
   .catch(err => console.error(err));
 

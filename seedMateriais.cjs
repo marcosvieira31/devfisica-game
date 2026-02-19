@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Material = require('./models/Material.cjs');
 
 // CONEXÃO
-mongoose.connect(process.env.MONGO_URI || "SuaStringDeConexaoAqui")
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Conectado ao Mongo!'))
   .catch(err => console.error(err));
 
