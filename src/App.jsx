@@ -11,7 +11,22 @@
   import TelaEstudos from './components/TelaEstudos';
   import TelaAdmin from "./components/TelaAdmin";
 
-  const AVATAR_PADRAO = { sex: "man", faceColor: "#F9C9B6", eyebrowStyle: "up", earSize: "small", eyeStyle: "circle", noseStyle: "round", mouthStyle: "smile", shirtStyle: "short", glassesStyle: "none", hairStyle: "normal", hatStyle: "none", hairColor: "#000", shirtColor: "#3498db", bgColor: "#e2e2e2", shape: "rounded" };
+  const AVATAR_PADRAO = {   sex: "man",
+  faceColor: "#F9C9B6",
+  eyebrowStyle: "up", // TRAVADO
+  earSize: "small",   // TRAVADO
+  eyeStyle: "circle",
+  noseStyle: "round",
+  mouthStyle: "smile",
+  shirtStyle: "short",
+  glassesStyle: "none",
+  hairStyle: "normal",
+  hatStyle: "none",
+  hatColor: "#000",
+  hairColor: "#000",
+  shirtColor: "#3498db",
+  bgColor: "#e2e2e2",
+  shape: "rounded" };
 
   // Função auxiliar para limpar o objeto de configuração
   const getSafeAvatarConfig = (userConfig) => {

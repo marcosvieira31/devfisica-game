@@ -251,7 +251,22 @@ app.post("/auth/validar-cadastro", async (req, res) => {
       serie,
       pontos: 0, 
       inventario: [],
-      avatarConfig: {} 
+      avatarConfig: {sex: "man",
+        faceColor: "#F9C9B6",
+        eyebrowStyle: "up",
+        earSize: "small",
+        eyeStyle: "circle",
+        noseStyle: "round",
+        mouthStyle: "smile",
+        shirtStyle: "short",
+        glassesStyle: "none",
+        hairStyle: "normal",
+        hatStyle: "none",
+        hatColor: "#000",
+        hairColor: "#000",
+        shirtColor: "#3498db",
+        bgColor: "#e2e2e2",
+        shape: "rounded"} 
     });
 
     await novoAluno.save();
@@ -462,7 +477,7 @@ app.post('/comprar-item', async (req, res) => {
 // Rota para buscar questões de treino filtradas
 // --- ROTA 1: BUSCAR QUESTÕES (FILTRANDO AS JÁ FEITAS) ---
 app.post('/treino/buscar', async (req, res) => {
-  const { area, dificuldade, email } = req.body; 
+  const { disciplina, area, dificuldade, email } = req.body; 
 
   try {
      const usuario = await Aluno.findOne({ email });
@@ -477,13 +492,15 @@ app.post('/treino/buscar', async (req, res) => {
     const questoes = await Questao.aggregate([
       { 
         $match: { 
+          disciplina: disciplina, // <--- NOVA LINHA ADICIONADA AQUI
           area: area, 
           dificuldade: dificuldade,
-          _id: { $nin: idsJaFeitos } // <--- O PULO DO GATO
+          _id: { $nin: idsJaFeitos } // <--- O PULO DO GATO CONTINUA AQUI
         } 
       },
       { $sample: { size: 5 } } 
     ]);
+    
     res.json(questoes);
 
   } catch (error) {

@@ -5,6 +5,10 @@ const QuestaoSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
+  disciplina: {
+    type: String,
+    required: true,
+    default: 'Ciências' },
   imagemUrl: { 
     type: String, 
     default: null // Para fotos de gráficos ou esquemas
@@ -21,11 +25,7 @@ const QuestaoSchema = new mongoose.Schema({
   },
   
   // --- FILTROS DE ESTUDO ---
-  area: { 
-    type: String, 
-    required: true,
-    enum: ['Mecânica', 'Termodinâmica', 'Óptica', 'Ondulatória', 'Eletromagnetismo', 'Cinemática'] 
-  },
+  area: { type: String, required: true },
   dificuldade: { 
     type: String, 
     required: true,

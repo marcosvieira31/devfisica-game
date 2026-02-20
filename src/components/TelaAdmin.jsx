@@ -175,16 +175,29 @@ function FormDesafio() {
 // FORMULÁRIO: NOVA QUESTÃO
 // ==========================================
 function FormQuestao() {
+  // 1. Estado inicial inclui "disciplina"
   const [form, setForm] = useState({
-    enunciado: '', area: 'Mecânica', dificuldade: 'Fácil', xp: 10, respostaCorreta: 'a',
+    disciplina: 'Física', area: 'Mecânica', enunciado: '', dificuldade: 'Fácil', xp: 10, respostaCorreta: 'a',
     altA: '', altB: '', altC: '', altD: ''
   });
+
+  // 2. Dicionário de categorias (A mágica da cascata acontece aqui)
+  const categorias = {
+    "Física": ["Mecânica", "Termodinâmica", "Óptica", "Ondulatória", "Eletromagnetismo"],
+    "Ciências": ["Química", "Biologia", "Física", "Astronomia"]
+  };
 
   const salvar = async () => {
     if (!form.enunciado || !form.altA || !form.altB) return alert("Preencha o enunciado e pelo menos as alternativas A e B!");
     
+    // 3. Incluímos a disciplina no payload para ir para o Banco de Dados
     const payload = {
-      enunciado: form.enunciado, area: form.area, dificuldade: form.dificuldade, xp: Number(form.xp), respostaCorreta: form.respostaCorreta,
+      disciplina: form.disciplina, 
+      area: form.area, 
+      enunciado: form.enunciado, 
+      dificuldade: form.dificuldade, 
+      xp: Number(form.xp), 
+      respostaCorreta: form.respostaCorreta,
       alternativas: [
         { id: 'a', texto: form.altA }, { id: 'b', texto: form.altB },
         { id: 'c', texto: form.altC }, { id: 'd', texto: form.altD }
@@ -194,7 +207,8 @@ function FormQuestao() {
     try {
       await axios.post('/admin/questoes', payload);
       alert('✅ Questão salva com sucesso!');
-      setForm({ ...form, enunciado: '', altA: '', altB: '', altC: '', altD: '' }); // Limpa form
+      // 4. Limpa apenas os textos, mantendo a disciplina e área selecionadas para facilitar cadastros em lote!
+      setForm({ ...form, enunciado: '', altA: '', altB: '', altC: '', altD: '', respostaCorreta: 'a' }); 
     } catch (e) { alert('❌ Erro ao salvar questão.'); }
   };
 
@@ -205,12 +219,35 @@ function FormQuestao() {
       <textarea placeholder="Enunciado da Questão..." value={form.enunciado} onChange={e => setForm({...form, enunciado: e.target.value})} style={{...inputStyle, height: '100px', resize: 'vertical'}} />
       
       <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-        <select value={form.area} onChange={e => setForm({...form, area: e.target.value})} style={inputStyle}>
-          <option>Mecânica</option><option>Termodinâmica</option><option>Óptica</option><option>Ondulatória</option><option>Eletromagnetismo</option>
+        
+        {/* NOVO SELECT: DISCIPLINA */}
+        <select 
+          value={form.disciplina} 
+          onChange={e => {
+            const novaDisciplina = e.target.value;
+            setForm({
+              ...form, 
+              disciplina: novaDisciplina,
+              area: categorias[novaDisciplina][0] // Pulo do gato: altera a disciplina e já reseta a área para a 1ª opção correta
+            });
+          }} 
+          style={inputStyle}
+        >
+          <option value="Física">Física</option>
+          <option value="Ciências">Ciências</option>
         </select>
+
+        {/* SELECT ATUALIZADO: ÁREA DINÂMICA */}
+        <select value={form.area} onChange={e => setForm({...form, area: e.target.value})} style={inputStyle}>
+          {categorias[form.disciplina].map(item => (
+            <option key={item} value={item}>{item}</option>
+          ))}
+        </select>
+
         <select value={form.dificuldade} onChange={e => setForm({...form, dificuldade: e.target.value})} style={inputStyle}>
           <option>Fácil</option><option>Médio</option><option>Difícil</option>
         </select>
+        
         <input type="number" placeholder="XP" value={form.xp} onChange={e => setForm({...form, xp: e.target.value})} style={inputStyle} />
       </div>
 

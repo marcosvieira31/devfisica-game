@@ -5,20 +5,28 @@ export default function TelaTreino({ usuarioEmail }) {
   const [etapa, setEtapa] = useState('CONFIG'); // CONFIG ou QUIZ
   const [questoes, setQuestoes] = useState([]);
   const [indiceAtual, setIndiceAtual] = useState(0);
-  const [feedback, setFeedback] = useState(null); // Para mostrar se acertou na hora
+  const [feedback, setFeedback] = useState(null); 
   const [jaErrou, setJaErrou] = useState(false);
 
-  // Filtros selecionados pelo aluno
+  // 1. FILTROS ATUALIZADOS: Adicionada a Disciplina
+  const [disciplina, setDisciplina] = useState('Física');
   const [area, setArea] = useState('Mecânica');
   const [dificuldade, setDificuldade] = useState('Fácil');
+
+  // 2. DICIONÁRIO DE CATEGORIAS (A mesma mágica do Admin)
+  const categorias = {
+    "Física": ["Mecânica", "Termodinâmica", "Óptica", "Ondulatória", "Eletromagnetismo"],
+    "Ciências": ["Química", "Biologia", "Física", "Astronomia"]
+  };
 
   // --- BUSCAR QUESTÕES NO BACKEND ---
   const iniciarTreino = async () => {
     try {
       const res = await axios.post('/treino/buscar', {
+        disciplina, // <--- Agora enviamos a disciplina para o banco de dados também!
         area,
         dificuldade,
-        email: usuarioEmail // <--- ADICIONE ESTA LINHA
+        email: usuarioEmail 
       });
       
       if (res.data.length === 0) {
@@ -26,7 +34,6 @@ export default function TelaTreino({ usuarioEmail }) {
         return;
       }
       
-      // ... resto do código igual ...
       setQuestoes(res.data);
       setEtapa('QUIZ');
       setIndiceAtual(0);
@@ -40,9 +47,6 @@ export default function TelaTreino({ usuarioEmail }) {
  // --- RESPONDER ---
   const responder = async (alternativaId) => {
     const questaoAtual = questoes[indiceAtual];
-
-    // O "jaErrou" aqui serve apenas para controle local, caso você queira
-    // implementar alguma lógica visual, mas para o avanço vamos ignorar.
     const ehPrimeiraTentativa = !jaErrou;
 
     try {
@@ -60,27 +64,24 @@ export default function TelaTreino({ usuarioEmail }) {
           msg: res.data.mensagem 
         });
       } else {
-        // Se errou, mostramos a mensagem e qual era a certa (opcional)
-        // Se preferir não mostrar a resposta certa para dificultar, apague a parte do res.data.respostaCerta
         setFeedback({ 
           tipo: 'erro', 
           msg: `Que pena! Você errou. Vamos para a próxima.` 
         });
       }
 
-      // 2. AVANÇA PARA A PRÓXIMA (Independente se acertou ou errou)
-      // O setTimeout agora roda para os dois casos
+      // 2. AVANÇA PARA A PRÓXIMA
       setTimeout(() => {
-        setFeedback(null); // Limpa o feedback (destrava botões)
-        setJaErrou(false); // Reseta para a próxima questão ser "nova"
+        setFeedback(null); 
+        setJaErrou(false); 
 
         if (indiceAtual + 1 < questoes.length) {
-          setIndiceAtual(prev => prev + 1); // Vai pra próxima
+          setIndiceAtual(prev => prev + 1); 
         } else {
           alert("Treino Concluído! 🎉");
-          setEtapa('CONFIG'); // Volta pro menu
+          setEtapa('CONFIG'); 
         }
-      }, 2500); // 2.5 segundos para ler a mensagem
+      }, 2500); 
 
     } catch (error) {
       alert("Erro de conexão com o servidor.");
@@ -93,20 +94,44 @@ export default function TelaTreino({ usuarioEmail }) {
       <div style={{textAlign: 'center' }}>
         <h3>Configurar Treino 🧠</h3>
         
+        {/* NOVO SELECT: DISCIPLINA */}
         <div style={{ margin: '20px 0' }}>
-          <label>Área da Física:</label><br/>
-          <select value={area} onChange={e => setArea(e.target.value)} style={{ padding: '10px', marginTop: '5px', borderRadius: "8px" }}>
-            <option>Mecânica</option>
-            <option>Termodinâmica</option>
-            <option>Óptica</option>
-            <option>Ondulatória</option>
-            <option>Eletromagnetismo</option>
+          <label style={{ fontWeight: "bold" }}>Disciplina:</label><br/>
+          <select 
+            value={disciplina} 
+            onChange={e => {
+              const novaDisciplina = e.target.value;
+              setDisciplina(novaDisciplina);
+              setArea(categorias[novaDisciplina][0]); // Atualiza a área automaticamente
+            }} 
+            style={{ padding: '10px', marginTop: '5px', borderRadius: "8px", width: "100%", maxWidth: "300px" }}
+          >
+            <option value="Física">Física (Ensino Médio)</option>
+            <option value="Ciências">Ciências (9º Ano)</option>
+          </select>
+        </div>
+
+        {/* SELECT ATUALIZADO: ÁREA DINÂMICA */}
+        <div style={{ margin: '20px 0' }}>
+          <label style={{ fontWeight: "bold" }}>Área de Estudo:</label><br/>
+          <select 
+            value={area} 
+            onChange={e => setArea(e.target.value)} 
+            style={{ padding: '10px', marginTop: '5px', borderRadius: "8px", width: "100%", maxWidth: "300px" }}
+          >
+            {categorias[disciplina].map(item => (
+              <option key={item} value={item}>{item}</option>
+            ))}
           </select>
         </div>
 
         <div style={{ margin: '20px 0' }}>
-          <label>Dificuldade:</label><br/>
-          <select value={dificuldade} onChange={e => setDificuldade(e.target.value)} style={{ padding: '10px', marginTop: '5px', borderRadius: "8px" }}>
+          <label style={{ fontWeight: "bold" }}>Dificuldade:</label><br/>
+          <select 
+            value={dificuldade} 
+            onChange={e => setDificuldade(e.target.value)} 
+            style={{ padding: '10px', marginTop: '5px', borderRadius: "8px", width: "100%", maxWidth: "300px" }}
+          >
             <option>Fácil</option>
             <option>Médio</option>
             <option>Difícil</option>
@@ -115,9 +140,9 @@ export default function TelaTreino({ usuarioEmail }) {
 
         <button 
           onClick={iniciarTreino}
-          style={{ background: '#3498db', color: 'white', padding: '10px 30px', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+          style={{ background: '#3498db', color: 'white', padding: '12px 30px', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: "bold", fontSize: "16px", marginTop: "10px" }}
         >
-          INICIAR TREINO
+          INICIAR TREINO 🚀
         </button>
       </div>
     );
@@ -140,7 +165,7 @@ export default function TelaTreino({ usuarioEmail }) {
           {q.alternativas.map(alt => (
             <button
               key={alt.id}
-              onClick={() => !feedback && responder(alt.id)} // Bloqueia clique se já respondeu
+              onClick={() => !feedback && responder(alt.id)}
               disabled={!!feedback}
               style={{
                 padding: '15px',
@@ -148,7 +173,7 @@ export default function TelaTreino({ usuarioEmail }) {
                 textAlign: 'left',
                 border: '1px solid #ddd',
                 borderRadius: '5px',
-                background: feedback && alt.id === feedback.respostaCerta ? '#d4edda' : '#f8f9fa', // Se quiser mostrar a certa visualmente depois
+                background: feedback && alt.id === feedback.respostaCerta ? '#d4edda' : '#f8f9fa', 
                 cursor: feedback ? 'default' : 'pointer'
               }}
             >
@@ -157,7 +182,6 @@ export default function TelaTreino({ usuarioEmail }) {
           ))}
         </div>
 
-        {/* FEEDBACK VISUAL */}
         {feedback && (
           <div style={{ 
             marginTop: '20px', 
