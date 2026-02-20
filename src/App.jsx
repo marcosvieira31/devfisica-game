@@ -227,7 +227,7 @@ const handleGanharPontos = async (pontos, desafioId) => {
                       onClick={() => setTelaAtual("desafios")} 
                       style={{ position: 'relative', ...estiloBotaoNav("desafios") }}
                     >
-                      <span>⚔️</span> Desafios
+                      <span>📚</span> Estudos
                       
                       {/* A MAGIA ACONTECE AQUI: A Etiqueta vermelha */}
                       {temDesafioNovo && (
